@@ -9,20 +9,21 @@ import myInitObject from '../MyInit';
 
 import './MessageList.css';
 
-const MY_USER_ID = myInitObject.me;
-const TALKING_TO = myInitObject.talkingTo;
-
 export default function MessageList(props) {
+  const MY_USER_ID = myInitObject.me;
   const [messages, setMessages] = useState([]);
   const [talking_to, setTalkingTo] = useState([]);
+  const [talking_toID, setTalkingToID] = useState(props.receiver);
+  const [reload, setReload] = useState(1);
 
   useEffect(() => {
-    getMessages();
-    getTalkingToName();
+    setTalkingToID(props.receiver);
+    getMessages(props.receiver);
+    getTalkingToName(props.receiver);
+    setReload((reload+1) % 100);
   },[])
-
   
-  const getMessages = () => {
+  const getMessages = (id) => {
     axios({
       url: 'https://messenger-app.hasura.app/v1/graphql',
       method: 'post',
@@ -39,7 +40,7 @@ export default function MessageList(props) {
           `,
         variables: {
           sender: MY_USER_ID,
-          receiver: TALKING_TO
+          receiver: id
         },
       },
       headers: {
@@ -48,7 +49,6 @@ export default function MessageList(props) {
       }
     })
     .then(response => {
-      console.log(response);
         let tempMessages = response.data.data.messages.map(messages => {
           return {
             id: messages.id,
@@ -57,7 +57,7 @@ export default function MessageList(props) {
             timestamp: messages.sent_at
           };
         });
-        setMessages([...messages, ...tempMessages])
+        setMessages(tempMessages)
     })
     .catch(error => {
       console.log(error);
@@ -126,7 +126,7 @@ export default function MessageList(props) {
       ] */
       // setMessages([...messages, ...tempMessages])
   }
-  const getTalkingToName = () => {
+  const getTalkingToName = (id) => {
     axios({
       url: 'https://messenger-app.hasura.app/v1/graphql',
       method: 'post',
@@ -139,7 +139,7 @@ export default function MessageList(props) {
         }        
           `,
         variables: {
-          talking_to: TALKING_TO
+          talking_to: id
         }
       },
       headers: {
@@ -148,13 +148,12 @@ export default function MessageList(props) {
       }
     })
     .then(response => {
-      console.log(response.data.data.users[0].name);
         let talking_with_name = response.data.data.users[0].name;
         setTalkingTo(talking_with_name);
     })
     .catch(error => {
       console.log(error);
-      return "Error in loading name";
+      setTalkingTo("Error in loading name");
     });
   }
   const renderMessages = () => {
@@ -214,6 +213,13 @@ export default function MessageList(props) {
     }
 
     return tempMessages;
+  }
+  if(talking_toID != props.receiver){
+    setTalkingToID(props.receiver);
+    getTalkingToName(props.receiver);
+    setMessages([]);
+    getMessages(props.receiver);
+    console.log(props.receiver, reload,talking_toID);
   }
 
     return(

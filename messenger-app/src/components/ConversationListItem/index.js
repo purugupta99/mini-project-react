@@ -13,8 +13,9 @@ export default function ConversationListItem(props) {
     const setMessages = talking_to_id => {
       return () => {
         console.log("I am " + myInitObject.me);
-        console.log("Talking to " + talking_to_id);
         myInitObject.talkingTo = talking_to_id;
+        props.updateReceiver(talking_to_id);
+        console.log("Talking to " + talking_to_id);
       }
     }
     return (

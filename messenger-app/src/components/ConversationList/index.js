@@ -12,7 +12,6 @@ export default function ConversationList(props) {
   useEffect(() => {
     getConversations()
   },[])
-
  const getConversations = () => {
     axios({
       url: 'https://messenger-app.hasura.app/v1/graphql',
@@ -34,7 +33,6 @@ export default function ConversationList(props) {
       }
     })
     .then(response => {
-      console.log(response);
         let newConversations = response.data.data.users.map(users => {
           return {
             id: users.id,
@@ -68,6 +66,7 @@ export default function ConversationList(props) {
               key={conversation.name}
               data={conversation}
               id={conversation.id}
+              updateReceiver = {props.updateReceiver}
             />
           )
         }
