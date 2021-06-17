@@ -9,7 +9,7 @@ const createApolloClient = (authToken) => {
     link: new HttpLink({
       uri: 'https://messenger-app.hasura.app/v1/graphql',
       headers: {
-        Authorization: `Bearer ${authToken}`
+        "x-hasura-admin-secret": authToken
       }
     }),
     cache: new InMemoryCache(),
