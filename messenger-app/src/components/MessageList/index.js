@@ -6,6 +6,7 @@ import Message from '../Message';
 import moment from 'moment';
 import axios from 'axios';
 import myInitObject from '../MyInit';
+import Loading from "../Loading";
 
 import { useSubscription, useApolloClient, gql } from "@apollo/client";
 
@@ -191,7 +192,7 @@ const NOTIFY_NEW_MESSAGES = gql`
       receiver: props.receiver
     }});
     if (loading) {
-      return <span>Loading...</span>;
+      return <Loading />;
     }
     if (error) {
       console.log(error);

@@ -2,8 +2,10 @@ import React from 'react';
 import Messenger from '../Messenger';
 import { WebSocketLink } from "@apollo/client/link/ws";
 import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client';
+import { useAuth0 } from "@auth0/auth0-react";
+import Loading from "../Loading";
 
-const createApolloClient = () => {
+const createApolloClient = (idToken) => {
   // console.log(authToken);
   return new ApolloClient({
     link: new WebSocketLink({
@@ -22,8 +24,12 @@ const createApolloClient = () => {
   });
  };
 
-export default function App() {
-  const client = createApolloClient();
+export default function App({idToken}) {
+  const { loading, logout } = useAuth0();
+  if (loading) {
+    return <Loading />;
+  }
+  const client = createApolloClient(idToken);
     return (
       <ApolloProvider client={client}>
       <div className="App">
