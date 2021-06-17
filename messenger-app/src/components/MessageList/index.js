@@ -12,7 +12,7 @@ import { useSubscription, useApolloClient, gql } from "@apollo/client";
 
 import './MessageList.css';
 
-const MY_USER_ID = myInitObject.me;
+
 
 
 const MessageList2 = (props) => {
@@ -87,7 +87,7 @@ const MessageList2 = (props) => {
       let previous = messages[i - 1];
       let current = messages[i];
       let next = messages[i + 1];
-      let isMine = current.author === MY_USER_ID;
+      let isMine = current.author === props.me;
       let currentMoment = moment(current.timestamp);
       let prevBySameAuthor = false;
       let nextBySameAuthor = false;
@@ -168,7 +168,7 @@ const MessageList2 = (props) => {
         ]}
         idReceiver= {props.receiver}
         nameReceiver = {talking_to}
-        idSender = {MY_USER_ID}
+        idSender = {props.me}
         addMessage = {add2Message}
         />
       </div>
@@ -188,7 +188,7 @@ const NOTIFY_NEW_MESSAGES = gql`
   const MessageList =(props) => {
     console.log(props);
     const { loading, error, data } = useSubscription(NOTIFY_NEW_MESSAGES, {variables: {
-      sender: MY_USER_ID,
+      sender: props.me,
       receiver: props.receiver
     }});
     if (loading) {
@@ -196,14 +196,16 @@ const NOTIFY_NEW_MESSAGES = gql`
     }
     if (error) {
       console.log(error);
-      return <span>Error</span>;
+      return <span>Error... {error.message}</span>;
     }
     console.log("socket-data")
     console.log(data);
+    // return <Loading/>;
     return (<MessageList2
       latestMessages={data.messages}
       numMessages = {data.messages.length}
       receiver = {props.receiver}
+      me = {props.me}
       />);
   }
 

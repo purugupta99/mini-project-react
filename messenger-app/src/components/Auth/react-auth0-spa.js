@@ -78,6 +78,7 @@ export const Auth0Provider = ({
   if (loading) {
     return <Callback />;
   }
+  console.log(isAuthenticated);
   if (!isAuthenticated) {
     return (
       <Auth0Context.Provider

@@ -5,8 +5,9 @@ const Loading = () => (
   <div className="spinner">
     <img src={loading} style={{
       display: "block",
-      margin: "auto",
-      marginTop: "50%"
+      marginLeft: "auto",
+      marginRight: "auto",
+      marginTop: "200px"
     }} alt="Loading" />
   </div>
 );

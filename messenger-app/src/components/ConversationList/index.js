@@ -56,7 +56,7 @@ export default function ConversationList(props) {
             <ToolbarButton key="cog" icon="ion-ios-cog" />
           ]}
           rightItems={[
-            <ToolbarButton key="add" icon="ion-ios-add-circle-outline" />
+            <ToolbarButton key="logout" icon="ion-ios-power" link = {props.logOutBTN}/>
           ]}
         />
         <ConversationSearch />

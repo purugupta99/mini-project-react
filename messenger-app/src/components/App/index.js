@@ -2,7 +2,7 @@ import React from 'react';
 import Messenger from '../Messenger';
 import { WebSocketLink } from "@apollo/client/link/ws";
 import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client';
-import { useAuth0 } from "@auth0/auth0-react";
+import { useAuth0 } from "../Auth/react-auth0-spa";
 import Loading from "../Loading";
 
 const createApolloClient = (idToken) => {
@@ -15,7 +15,8 @@ const createApolloClient = (idToken) => {
         reconnect: true,
         connectionParams: {
           headers: {
-            'x-hasura-admin-secret': 'cLzWoSwe7ooq2gB67r5bLrTMMDkNU5wjIZ6G7h5MEcXcp8wgPvzPcZPE6hGk3XW8'
+           Authorization : `Bearer ${idToken}`
+            // 'x-hasura-admin-secret': 'cLzWoSwe7ooq2gB67r5bLrTMMDkNU5wjIZ6G7h5MEcXcp8wgPvzPcZPE6hGk3XW8'
           }
         }
       }
@@ -26,14 +27,16 @@ const createApolloClient = (idToken) => {
 
 export default function App({idToken}) {
   const { loading, logout } = useAuth0();
+  console.log(logout);
   if (loading) {
     return <Loading />;
   }
   const client = createApolloClient(idToken);
+  // console.log(client);
     return (
       <ApolloProvider client={client}>
       <div className="App">
-        <Messenger />
+        <Messenger logOutBTN = {logout} />
       </div>
       </ApolloProvider>
     );
