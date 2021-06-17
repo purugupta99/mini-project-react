@@ -5,11 +5,12 @@ import ToolbarButton from '../ToolbarButton';
 import Message from '../Message';
 import moment from 'moment';
 import axios from 'axios';
+import myInitObject from '../MyInit';
 
 import './MessageList.css';
 
-const MY_USER_ID = '1';
-const TALKING_TO = '2';
+const MY_USER_ID = myInitObject.me;
+const TALKING_TO = myInitObject.talkingTo;
 
 export default function MessageList(props) {
   const [messages, setMessages] = useState([]);
