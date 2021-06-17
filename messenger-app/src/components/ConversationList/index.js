@@ -14,16 +14,40 @@ export default function ConversationList(props) {
   },[])
 
  const getConversations = () => {
-    axios.get('https://randomuser.me/api/?results=20').then(response => {
-        let newConversations = response.data.results.map(result => {
+    axios({
+      url: 'https://messenger-app.hasura.app/v1/graphql',
+      method: 'post',
+      data: {
+        query: `
+        query getUsers {
+          users {
+            id
+            name
+            last_seen
+          }
+        }
+          `
+      },
+      headers: {
+        'x-hasura-admin-secret': 'cLzWoSwe7ooq2gB67r5bLrTMMDkNU5wjIZ6G7h5MEcXcp8wgPvzPcZPE6hGk3XW8',
+        'content-type': 'application/json'
+      }
+    })
+    .then(response => {
+      console.log(response);
+        let newConversations = response.data.data.users.map(users => {
           return {
-            photo: result.picture.large,
-            name: `${result.name.first} ${result.name.last}`,
-            text: 'Hello world! This is a long message that needs to be truncated.'
+            photo: 'https://randomuser.me/api/portraits/men/29.jpg',
+            name: users.name,
+            text: users.last_seen
           };
         });
         setConversations([...conversations, ...newConversations])
+    })
+    .catch(error => {
+      console.log(error);
     });
+
   }
 
     return (

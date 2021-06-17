@@ -4,10 +4,11 @@ import Toolbar from '../Toolbar';
 import ToolbarButton from '../ToolbarButton';
 import Message from '../Message';
 import moment from 'moment';
+import axios from 'axios';
 
 import './MessageList.css';
 
-const MY_USER_ID = 'apple';
+const MY_USER_ID = '1';
 
 export default function MessageList(props) {
   const [messages, setMessages] = useState([])
@@ -18,7 +19,42 @@ export default function MessageList(props) {
 
   
   const getMessages = () => {
-     var tempMessages = [
+    axios({
+      url: 'https://messenger-app.hasura.app/v1/graphql',
+      method: 'post',
+      data: {
+        query: `
+        query MyQuery {
+          messages(where: {_or: [{_and: [{id_receiver: {_eq: "1"}}, {id_sender: {_eq: "2"}}]},{_and: [{id_receiver: {_eq: "2"}}, {id_sender: {_eq: "1"}}]}]}, order_by: {send_at: asc}) {
+            text
+            user_sender{
+              id
+            }
+          }
+        }       
+          `
+      },
+      headers: {
+        'x-hasura-admin-secret': 'cLzWoSwe7ooq2gB67r5bLrTMMDkNU5wjIZ6G7h5MEcXcp8wgPvzPcZPE6hGk3XW8',
+        'content-type': 'application/json'
+      }
+    })
+    .then(response => {
+      console.log(response);
+        let tempMessages = response.data.data.messages.map(messages => {
+          return {
+            id: messages.id,
+            author: messages.user_sender.id,
+            message: messages.text,
+            timestamp: messages.sent_at
+          };
+        });
+        setMessages([...messages, ...tempMessages])
+    })
+    .catch(error => {
+      console.log(error);
+    });
+     /* var tempMessages = [
         {
           id: 1,
           author: 'apple',
@@ -79,8 +115,8 @@ export default function MessageList(props) {
           message: 'It looks like it wraps exactly as it is supposed to. Lets see what a reply looks like!',
           timestamp: new Date().getTime()
         },
-      ]
-      setMessages([...messages, ...tempMessages])
+      ] */
+      // setMessages([...messages, ...tempMessages])
   }
 
   const renderMessages = () => {
