@@ -9,12 +9,15 @@ import axios from 'axios';
 import './MessageList.css';
 
 const MY_USER_ID = '1';
+const TALKING_TO = '2';
 
 export default function MessageList(props) {
-  const [messages, setMessages] = useState([])
+  const [messages, setMessages] = useState([]);
+  const [talking_to, setTalkingTo] = useState([]);
 
   useEffect(() => {
     getMessages();
+    getTalkingToName();
   },[])
 
   
@@ -24,15 +27,19 @@ export default function MessageList(props) {
       method: 'post',
       data: {
         query: `
-        query MyQuery {
-          messages(where: {_or: [{_and: [{id_receiver: {_eq: "1"}}, {id_sender: {_eq: "2"}}]},{_and: [{id_receiver: {_eq: "2"}}, {id_sender: {_eq: "1"}}]}]}, order_by: {send_at: asc}) {
+        query MyQuery ($sender:String!,$receiver:String!) {
+          messages(where: {_or: [{_and: [{id_receiver: {_eq: $receiver}}, {id_sender: {_eq: $sender}}]},{_and: [{id_receiver: {_eq: $sender}}, {id_sender: {_eq: $receiver}}]}]}, order_by: {send_at: asc}) {
             text
             user_sender{
               id
             }
           }
-        }       
-          `
+        }    
+          `,
+        variables: {
+          sender: MY_USER_ID,
+          receiver: TALKING_TO
+        },
       },
       headers: {
         'x-hasura-admin-secret': 'cLzWoSwe7ooq2gB67r5bLrTMMDkNU5wjIZ6G7h5MEcXcp8wgPvzPcZPE6hGk3XW8',
@@ -118,7 +125,37 @@ export default function MessageList(props) {
       ] */
       // setMessages([...messages, ...tempMessages])
   }
-
+  const getTalkingToName = () => {
+    axios({
+      url: 'https://messenger-app.hasura.app/v1/graphql',
+      method: 'post',
+      data: {
+        query: `
+        query MyQuery($talking_to: String) {
+          users(where: {id: {_eq: $talking_to}}) {
+            name
+          }
+        }        
+          `,
+        variables: {
+          talking_to: TALKING_TO
+        }
+      },
+      headers: {
+        'x-hasura-admin-secret': 'cLzWoSwe7ooq2gB67r5bLrTMMDkNU5wjIZ6G7h5MEcXcp8wgPvzPcZPE6hGk3XW8',
+        'content-type': 'application/json'
+      }
+    })
+    .then(response => {
+      console.log(response.data.data.users[0].name);
+        let talking_with_name = response.data.data.users[0].name;
+        setTalkingTo(talking_with_name);
+    })
+    .catch(error => {
+      console.log(error);
+      return "Error in loading name";
+    });
+  }
   const renderMessages = () => {
     let i = 0;
     let messageCount = messages.length;
@@ -181,7 +218,7 @@ export default function MessageList(props) {
     return(
       <div className="message-list">
         <Toolbar
-          title="Conversation Title"
+          title={talking_to}
           rightItems={[
             <ToolbarButton key="info" icon="ion-ios-information-circle-outline" />,
             <ToolbarButton key="video" icon="ion-ios-videocam" />,

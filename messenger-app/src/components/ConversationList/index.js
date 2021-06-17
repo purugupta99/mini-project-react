@@ -37,7 +37,7 @@ export default function ConversationList(props) {
       console.log(response);
         let newConversations = response.data.data.users.map(users => {
           return {
-            photo: 'https://randomuser.me/api/portraits/men/29.jpg',
+            photo: 'https://i.pinimg.com/236x/38/aa/95/38aa95f88d5f0fc3fc0f691abfaeaf0c.jpg',
             name: users.name,
             text: users.last_seen
           };
