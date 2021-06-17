@@ -5,88 +5,44 @@ import ToolbarButton from '../ToolbarButton';
 import Message from '../Message';
 import moment from 'moment';
 
+import { gql, useQuery } from '@apollo/client';
+
 import './MessageList.css';
 
 const MY_USER_ID = 'apple';
 
-export default function MessageList(props) {
-  const [messages, setMessages] = useState([])
+const GET_MY_MESSAGES = gql `
+
+  query MyQuery ($id_receiver: String!, $id_sender: String!){
+    messages(where: {_or: [{id_receiver: {_eq: $id_receiver}}, {id_sender: {_eq: $id_sender}}]}, order_by: {send_at: asc}) {
+      text
+    }
+  }
+ `;
+
+const MessageList = props => {
+  const [messages, setMessages] = useState("");
 
   useEffect(() => {
-    getMessages();
-  },[])
+    async function getMessages () {
 
+      console.log("hi");
+ 
+      const [addMessages] = useQuery(GET_MY_MESSAGES);
+      let messageList = addMessages({variables: {id_receiver: "1", id_sender: "1"}});
+ 
+      console.log(messageList);
+       setMessages([...messages, ...messageList]);
+   }
+    getMessages();
+  }, [])
   
-  const getMessages = () => {
-     var tempMessages = [
-        {
-          id: 1,
-          author: 'apple',
-          message: 'Hello world! This is a long message that will hopefully get wrapped by our message bubble component! We will see how well it works.',
-          timestamp: new Date().getTime()
-        },
-        {
-          id: 2,
-          author: 'orange',
-          message: 'It looks like it wraps exactly as it is supposed to. Lets see what a reply looks like!',
-          timestamp: new Date().getTime()
-        },
-        {
-          id: 3,
-          author: 'orange',
-          message: 'Hello world! This is a long message that will hopefully get wrapped by our message bubble component! We will see how well it works.',
-          timestamp: new Date().getTime()
-        },
-        {
-          id: 4,
-          author: 'apple',
-          message: 'It looks like it wraps exactly as it is supposed to. Lets see what a reply looks like!',
-          timestamp: new Date().getTime()
-        },
-        {
-          id: 5,
-          author: 'apple',
-          message: 'Hello world! This is a long message that will hopefully get wrapped by our message bubble component! We will see how well it works.',
-          timestamp: new Date().getTime()
-        },
-        {
-          id: 6,
-          author: 'apple',
-          message: 'It looks like it wraps exactly as it is supposed to. Lets see what a reply looks like!',
-          timestamp: new Date().getTime()
-        },
-        {
-          id: 7,
-          author: 'orange',
-          message: 'Hello world! This is a long message that will hopefully get wrapped by our message bubble component! We will see how well it works.',
-          timestamp: new Date().getTime()
-        },
-        {
-          id: 8,
-          author: 'orange',
-          message: 'It looks like it wraps exactly as it is supposed to. Lets see what a reply looks like!',
-          timestamp: new Date().getTime()
-        },
-        {
-          id: 9,
-          author: 'apple',
-          message: 'Hello world! This is a long message that will hopefully get wrapped by our message bubble component! We will see how well it works.',
-          timestamp: new Date().getTime()
-        },
-        {
-          id: 10,
-          author: 'orange',
-          message: 'It looks like it wraps exactly as it is supposed to. Lets see what a reply looks like!',
-          timestamp: new Date().getTime()
-        },
-      ]
-      setMessages([...messages, ...tempMessages])
-  }
+  
 
   const renderMessages = () => {
     let i = 0;
     let messageCount = messages.length;
-    let tempMessages = [];
+    let messageList = [];
 
     while (i < messageCount) {
       let previous = messages[i - 1];
@@ -124,7 +80,7 @@ export default function MessageList(props) {
         }
       }
 
-      tempMessages.push(
+      messageList.push(
         <Message
           key={i}
           isMine={isMine}
@@ -139,7 +95,7 @@ export default function MessageList(props) {
       i += 1;
     }
 
-    return tempMessages;
+    return messageList;
   }
 
     return(
@@ -149,7 +105,9 @@ export default function MessageList(props) {
           rightItems={[
             <ToolbarButton key="info" icon="ion-ios-information-circle-outline" />,
             <ToolbarButton key="video" icon="ion-ios-videocam" />,
-            <ToolbarButton key="phone" icon="ion-ios-call" />
+            <ToolbarButton key="phone" icon="ion-ios-call" />,
+            // <button key="test" onClick={getMessages}> hi </button>
+            // <ToolbarButton key="send"  icon="ion-ios-call" onClick={getMessages} />
           ]}
         />
 
@@ -166,3 +124,5 @@ export default function MessageList(props) {
       </div>
     );
 }
+
+export default MessageList;
