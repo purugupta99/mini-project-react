@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, createContext} from 'react';
 import Compose from '../Compose';
 import Toolbar from '../Toolbar';
 import ToolbarButton from '../ToolbarButton';
@@ -7,125 +7,43 @@ import moment from 'moment';
 import axios from 'axios';
 import myInitObject from '../MyInit';
 
+import { useSubscription, useApolloClient, gql } from "@apollo/client";
+
 import './MessageList.css';
 
-export default function MessageList(props) {
-  const MY_USER_ID = myInitObject.me;
+const MY_USER_ID = myInitObject.me;
+
+
+const MessageList2 = (props) => {
   const [messages, setMessages] = useState([]);
-  const [talking_to, setTalkingTo] = useState([]);
-  const [talking_toID, setTalkingToID] = useState(props.receiver);
-  const [reload, setReload] = useState(1);
+  const [talking_to, setTalkingTo] = useState([]); // stores name
+  const [talking_toID, setTalkingToID] = useState(props.receiver); // stores id
+  const [reload, setReload] = useState(1); // farzi
 
   useEffect(() => {
     setTalkingToID(props.receiver);
-    getMessages(props.receiver);
+    getMessages();
     getTalkingToName(props.receiver);
-    setReload((reload+1) % 100);
+    setReload((reload+1) % 100); // farzi
   },[])
-  
-  const getMessages = (id) => {
-    axios({
-      url: 'https://messenger-app.hasura.app/v1/graphql',
-      method: 'post',
-      data: {
-        query: `
-        query MyQuery ($sender:String!,$receiver:String!) {
-          messages(where: {_or: [{_and: [{id_receiver: {_eq: $receiver}}, {id_sender: {_eq: $sender}}]},{_and: [{id_receiver: {_eq: $sender}}, {id_sender: {_eq: $receiver}}]}]}, order_by: {send_at: asc}) {
-            text
-            user_sender{
-              id
-            }
-          }
-        }    
-          `,
-        variables: {
-          sender: MY_USER_ID,
-          receiver: id
-        },
-      },
-      headers: {
-        'x-hasura-admin-secret': 'cLzWoSwe7ooq2gB67r5bLrTMMDkNU5wjIZ6G7h5MEcXcp8wgPvzPcZPE6hGk3XW8',
-        'content-type': 'application/json'
-      }
-    })
-    .then(response => {
-        let tempMessages = response.data.data.messages.map(messages => {
-          return {
-            id: messages.id,
-            author: messages.user_sender.id,
-            message: messages.text,
-            timestamp: messages.sent_at
-          };
-        });
-        setMessages(tempMessages)
-    })
-    .catch(error => {
-      console.log(error);
+  const getMessages = () => {
+    // console.log("Hello again");
+
+    let tempMessages = props.latestMessages.map(messages => {
+      return {
+        id: messages.id,
+        author: messages.user_sender.id,
+        message: messages.text,
+        timestamp: messages.sent_at
+      };
     });
-     /* var tempMessages = [
-        {
-          id: 1,
-          author: 'apple',
-          message: 'Hello world! This is a long message that will hopefully get wrapped by our message bubble component! We will see how well it works.',
-          timestamp: new Date().getTime()
-        },
-        {
-          id: 2,
-          author: 'orange',
-          message: 'It looks like it wraps exactly as it is supposed to. Lets see what a reply looks like!',
-          timestamp: new Date().getTime()
-        },
-        {
-          id: 3,
-          author: 'orange',
-          message: 'Hello world! This is a long message that will hopefully get wrapped by our message bubble component! We will see how well it works.',
-          timestamp: new Date().getTime()
-        },
-        {
-          id: 4,
-          author: 'apple',
-          message: 'It looks like it wraps exactly as it is supposed to. Lets see what a reply looks like!',
-          timestamp: new Date().getTime()
-        },
-        {
-          id: 5,
-          author: 'apple',
-          message: 'Hello world! This is a long message that will hopefully get wrapped by our message bubble component! We will see how well it works.',
-          timestamp: new Date().getTime()
-        },
-        {
-          id: 6,
-          author: 'apple',
-          message: 'It looks like it wraps exactly as it is supposed to. Lets see what a reply looks like!',
-          timestamp: new Date().getTime()
-        },
-        {
-          id: 7,
-          author: 'orange',
-          message: 'Hello world! This is a long message that will hopefully get wrapped by our message bubble component! We will see how well it works.',
-          timestamp: new Date().getTime()
-        },
-        {
-          id: 8,
-          author: 'orange',
-          message: 'It looks like it wraps exactly as it is supposed to. Lets see what a reply looks like!',
-          timestamp: new Date().getTime()
-        },
-        {
-          id: 9,
-          author: 'apple',
-          message: 'Hello world! This is a long message that will hopefully get wrapped by our message bubble component! We will see how well it works.',
-          timestamp: new Date().getTime()
-        },
-        {
-          id: 10,
-          author: 'orange',
-          message: 'It looks like it wraps exactly as it is supposed to. Lets see what a reply looks like!',
-          timestamp: new Date().getTime()
-        },
-      ] */
-      // setMessages([...messages, ...tempMessages])
+    if(messages.length!==props.numMessages){
+      setMessages(tempMessages);
+    // console.log("Hello luv");
+    }
   }
+  // console.log("Hello partyyy");
+  getMessages();
   const add2Message = newMsg => {
     setMessages([...messages, ...newMsg])
   }
@@ -217,7 +135,7 @@ export default function MessageList(props) {
 
     return tempMessages;
   }
-  if(talking_toID != props.receiver){
+  if(talking_toID !== props.receiver){
     setTalkingToID(props.receiver);
     getTalkingToName(props.receiver);
     setMessages([]);
@@ -255,3 +173,37 @@ export default function MessageList(props) {
       </div>
     );
 }
+
+const NOTIFY_NEW_MESSAGES = gql`
+    subscription getMessages ($sender:String!,$receiver:String!) {
+      messages(where: {_or: [{_and: [{id_receiver: {_eq: $receiver}}, {id_sender: {_eq: $sender}}]},{_and: [{id_receiver: {_eq: $sender}}, {id_sender: {_eq: $receiver}}]}]}, order_by: {send_at: asc}) {
+        text
+        user_sender{
+          id
+        }
+      }
+    }
+  `;
+  const MessageList =(props) => {
+    console.log(props);
+    const { loading, error, data } = useSubscription(NOTIFY_NEW_MESSAGES, {variables: {
+      sender: MY_USER_ID,
+      receiver: props.receiver
+    }});
+    if (loading) {
+      return <span>Loading...</span>;
+    }
+    if (error) {
+      console.log(error);
+      return <span>Error</span>;
+    }
+    console.log("socket-data")
+    console.log(data);
+    return (<MessageList2
+      latestMessages={data.messages}
+      numMessages = {data.messages.length}
+      receiver = {props.receiver}
+      />);
+  }
+
+export default MessageList;
