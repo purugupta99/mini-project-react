@@ -9,7 +9,9 @@ import { gql, useQuery } from '@apollo/client';
 
 import './MessageList.css';
 
-const MY_USER_ID = 'apple';
+require('react-dom');
+window.React2 = require('react');
+console.log(window.React1 === window.React2);
 
 // const GET_MY_MESSAGES = gql `
 
@@ -21,7 +23,6 @@ const MY_USER_ID = 'apple';
 //  `;
 
  const GET_MY_MESSAGES = gql `
-
   query MyQuery{
     messages(where: {_or: [{id_receiver: {_eq: "1"}}, {id_sender: {_eq: "1"}}]}, order_by: {send_at: asc}) {
       id
@@ -33,9 +34,35 @@ const MY_USER_ID = 'apple';
     }
   }
  `;
-const MessageList = props => {
 
-  const [messages, setMessages] = useState("");
+ const GET_RECIPIENT_NAME = gql `
+  query MyQuery($id: String!) {
+    users(where: {id: {_eq: $id}}) {
+      name
+    }
+  }
+ `;
+
+const MessageList = (props) => {
+
+  const [messages, setMessages] = useState([]);
+  const [recipientId, setRecipientId] = useState("");
+  const [recipientName, setRecipientName] = useState("");
+
+  useEffect(() => {
+    setRecipientId(props.recipientId);
+    getRecipientName(recipientId);
+
+  }, [])
+
+  const getRecipientName = (recipientId) => {
+    const {data, loading, error} = useQuery(GET_RECIPIENT_NAME, {
+      variables: {recipientId},
+    });
+
+    console.log(data);
+  }
+
   const {data, loading, error} = useQuery(GET_MY_MESSAGES);
 
   console.log(data)
@@ -58,78 +85,7 @@ const MessageList = props => {
   if (messages == ""){
     setMessages(tempMessages)
   }
-  // const getMessages = async () => {
-
-  //    console.log("hi");
-
-  //    const [addMessages] = useQuery(GET_MY_MESSAGES);
-  //    let messageList = addMessages({variables: {id_receiver: "1", id_sender: "1"}});
-
-  //    console.log(messageList);
-  //   //  var tempMessages = [
-  //   //     {
-  //   //       id: 1,
-  //   //       author: 'apple',
-  //   //       message: 'Hello world! This is a long message that will hopefully get wrapped by our message bubble component! We will see how well it works.',
-  //   //       timestamp: new Date().getTime()
-  //   //     },
-  //   //     {
-  //   //       id: 2,
-  //   //       author: 'orange',
-  //   //       message: 'It looks like it wraps exactly as it is supposed to. Lets see what a reply looks like!',
-  //   //       timestamp: new Date().getTime()
-  //   //     },
-  //   //     {
-  //   //       id: 3,
-  //   //       author: 'orange',
-  //   //       message: 'Hello world! This is a long message that will hopefully get wrapped by our message bubble component! We will see how well it works.',
-  //   //       timestamp: new Date().getTime()
-  //   //     },
-  //   //     {
-  //   //       id: 4,
-  //   //       author: 'apple',
-  //   //       message: 'It looks like it wraps exactly as it is supposed to. Lets see what a reply looks like!',
-  //   //       timestamp: new Date().getTime()
-  //   //     },
-  //   //     {
-  //   //       id: 5,
-  //   //       author: 'apple',
-  //   //       message: 'Hello world! This is a long message that will hopefully get wrapped by our message bubble component! We will see how well it works.',
-  //   //       timestamp: new Date().getTime()
-  //   //     },
-  //   //     {
-  //   //       id: 6,
-  //   //       author: 'apple',
-  //   //       message: 'It looks like it wraps exactly as it is supposed to. Lets see what a reply looks like!',
-  //   //       timestamp: new Date().getTime()
-  //   //     },
-  //   //     {
-  //   //       id: 7,
-  //   //       author: 'orange',
-  //   //       message: 'Hello world! This is a long message that will hopefully get wrapped by our message bubble component! We will see how well it works.',
-  //   //       timestamp: new Date().getTime()
-  //   //     },
-  //   //     {
-  //   //       id: 8,
-  //   //       author: 'orange',
-  //   //       message: 'It looks like it wraps exactly as it is supposed to. Lets see what a reply looks like!',
-  //   //       timestamp: new Date().getTime()
-  //   //     },
-  //   //     {
-  //   //       id: 9,
-  //   //       author: 'apple',
-  //   //       message: 'Hello world! This is a long message that will hopefully get wrapped by our message bubble component! We will see how well it works.',
-  //   //       timestamp: new Date().getTime()
-  //   //     },
-  //   //     {
-  //   //       id: 10,
-  //   //       author: 'orange',
-  //   //       message: 'It looks like it wraps exactly as it is supposed to. Lets see what a reply looks like!',
-  //   //       timestamp: new Date().getTime()
-  //   //     },
-  //   //   ]
-      // setMessages(tempMessages);
-  // }
+  
 
   const renderMessages = () => {
     let i = 0;
@@ -140,7 +96,7 @@ const MessageList = props => {
       let previous = messages[i - 1];
       let current = messages[i];
       let next = messages[i + 1];
-      let isMine = current.author === MY_USER_ID;
+      let isMine = current.author === 2;
       let currentMoment = moment(current.timestamp);
       let prevBySameAuthor = false;
       let nextBySameAuthor = false;

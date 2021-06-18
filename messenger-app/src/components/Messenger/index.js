@@ -1,9 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import ConversationList from '../ConversationList';
 import MessageList from '../MessageList';
 import './Messenger.css';
 
 export default function Messenger(props) {
+
+    const [recipient, setRecipient] = useState("1");
+
+    const handleRecipient = recipientId => {
+      console.log(recipientId);
+      setRecipient(recipientId);
+    };
+
     return (
       <div className="messenger">
         {/* <Toolbar
@@ -26,11 +34,15 @@ export default function Messenger(props) {
         /> */}
 
         <div className="scrollable sidebar">
-          <ConversationList />
+          <ConversationList 
+          handleRecipient = {handleRecipient}
+          />
         </div>
 
         <div className="scrollable content">
-          <MessageList />
+          <MessageList 
+          recipient = {recipient}
+          />
         </div>
       </div>
     );
