@@ -16,7 +16,7 @@ const ADD_MESSAGE = gql `
   }
   `;
 
-const MessageInput = () => {
+const MessageInput = (props) => {
   let input;
   const [messageInput, setMessageInput] = useState('');
 
@@ -67,9 +67,9 @@ const MessageInput = () => {
         onChange={e => (setMessageInput(e.target.value))}
       />
 
-      {/* {
+      {
         props.rightItems
-      } */}
+      }
     </form>
   );
 };
