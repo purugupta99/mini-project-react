@@ -23,7 +23,7 @@ export default function ConversationList(props) {
 
   const {data, loading, error} = useQuery(GET_MY_CONVOS);
 
-  console.log(data);
+  // console.log(data);
 
   if (loading) {
     return (<div> <h1> Loading .. </h1></div>)

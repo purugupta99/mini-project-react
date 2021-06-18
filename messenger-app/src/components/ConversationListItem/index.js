@@ -13,7 +13,7 @@ export default function ConversationListItem(props) {
     const handleUpdateReceiver = (recipientId) => {
 
       return () => {
-        console.log(recipientId);
+        // console.log(recipientId);
         props.handleRecipient(recipientId);
       }
     }

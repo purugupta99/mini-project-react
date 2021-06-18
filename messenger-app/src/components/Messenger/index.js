@@ -8,7 +8,7 @@ export default function Messenger(props) {
     const [recipient, setRecipient] = useState("1");
 
     const handleRecipient = recipientId => {
-      console.log(recipientId);
+      // console.log(recipientId);
       setRecipient(recipientId);
     };
 
