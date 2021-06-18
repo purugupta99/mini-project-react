@@ -22,15 +22,11 @@ const MessageInput = () => {
 
   const updateCache = (cache, {data}) => {
 
-    // Fetch the todos from the cache
-
     const existingMessages = cache.readQuery({
 
       query: GET_MY_MESSAGES
 
     });
-
-    // Add the new todo to the cache
 
     const newMessage = data.insert_message.returning[0];
     cache.writeQuery({
@@ -79,22 +75,3 @@ const MessageInput = () => {
 };
 
 export default MessageInput;
-
-// import React from 'react';
-// import './Compose.css';
-
-// export default function Compose(props) {
-//     return (
-//       <div className="compose">
-//         <input
-//           type="text"
-//           className="compose-input"
-//           placeholder="Type a message, @name"
-//         />
-
-//         {
-//           props.rightItems
-//         }
-//       </div>
-//     );
-// }
