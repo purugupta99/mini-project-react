@@ -24,31 +24,39 @@ export const Auth0Provider = ({
 
   useEffect(() => {
     const initAuth0 = async () => {
+      // console.log("initAuth0");
       const auth0FromHook = await createAuth0Client(initOptions);
       setAuth0(auth0FromHook);
 
       if (window.location.search.includes("code=")) {
+        // console.log("windows.location.search includes code =");
         const { appState } = await auth0FromHook.handleRedirectCallback();
         onRedirectCallback(appState);
       }
-
+      // console.log("I got out of if condition")
       const isAuthenticated = await auth0FromHook.isAuthenticated();
-
       setIsAuthenticated(isAuthenticated);
+      // console.log(isAuthenticated);
       if (isAuthenticated) {
         const user = await auth0FromHook.getUser();
         setUser(user);
         const idTokenClaims = await auth0FromHook.getIdTokenClaims();
         setIdToken(idTokenClaims.__raw);
       }
-
+      // console.log(user);
+      // console.log("setting loading false")
       setLoading(false);
+      if(isAuthenticated && (window.location.search.includes("code="))){
+        // console.log("Authenticated and stuck");
+        document.location.href="/";
+      }
     };
     initAuth0();
     // eslint-disable-next-line
   }, []);
 
   const loginWithPopup = async (params = {}) => {
+    // console.log("loginWithPopup");
     setPopupOpen(true);
     try {
       await auth0Client.loginWithPopup(params);
@@ -63,6 +71,7 @@ export const Auth0Provider = ({
   };
 
   const handleRedirectCallback = async () => {
+    // console.log("handleRedirectCallback");
     setLoading(true);
     const result = await auth0Client.handleRedirectCallback();
     const user = await auth0Client.getUser();
@@ -78,7 +87,8 @@ export const Auth0Provider = ({
   if (loading) {
     return <Callback />;
   }
-  console.log(isAuthenticated);
+  // console.log("Partyyyyy");
+  // console.log(isAuthenticated);
   if (!isAuthenticated) {
     return (
       <Auth0Context.Provider
@@ -100,7 +110,7 @@ export const Auth0Provider = ({
       </Auth0Context.Provider>
     );
   }
-  console.log(user);
+  // console.log(user);
   return (
     <Auth0Context.Provider
       value={{

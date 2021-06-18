@@ -27,7 +27,7 @@ const createApolloClient = (idToken) => {
 
 export default function App({idToken}) {
   const { loading, logout } = useAuth0();
-  console.log(logout);
+  // console.log(logout);
   if (loading) {
     return <Loading />;
   }

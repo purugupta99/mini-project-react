@@ -1,14 +1,13 @@
-import React, {useEffect, useState, createContext} from 'react';
+import React, {useEffect, useState} from 'react';
 import Compose from '../Compose';
 import Toolbar from '../Toolbar';
 import ToolbarButton from '../ToolbarButton';
 import Message from '../Message';
 import moment from 'moment';
 import axios from 'axios';
-import myInitObject from '../MyInit';
 import Loading from "../Loading";
 
-import { useSubscription, useApolloClient, gql } from "@apollo/client";
+import { useSubscription, gql } from "@apollo/client";
 
 import './MessageList.css';
 
@@ -33,7 +32,7 @@ const MessageList2 = (props) => {
     let tempMessages = props.latestMessages.map(messages => {
       return {
         id: messages.id,
-        author: messages.user_sender.id,
+        author: messages.id_sender,
         message: messages.text,
         timestamp: messages.sent_at
       };
@@ -141,7 +140,7 @@ const MessageList2 = (props) => {
     getTalkingToName(props.receiver);
     setMessages([]);
     getMessages(props.receiver);
-    console.log(props.receiver, reload,talking_toID);
+    // console.log(props.receiver, reload,talking_toID);
   }
 
     return(
@@ -179,14 +178,12 @@ const NOTIFY_NEW_MESSAGES = gql`
     subscription getMessages ($sender:String!,$receiver:String!) {
       messages(where: {_or: [{_and: [{id_receiver: {_eq: $receiver}}, {id_sender: {_eq: $sender}}]},{_and: [{id_receiver: {_eq: $sender}}, {id_sender: {_eq: $receiver}}]}]}, order_by: {send_at: asc}) {
         text
-        user_sender{
-          id
-        }
+        id_sender
       }
     }
   `;
   const MessageList =(props) => {
-    console.log(props);
+    // console.log(props);
     const { loading, error, data } = useSubscription(NOTIFY_NEW_MESSAGES, {variables: {
       sender: props.me,
       receiver: props.receiver
@@ -198,8 +195,8 @@ const NOTIFY_NEW_MESSAGES = gql`
       console.log(error);
       return <span>Error... {error.message}</span>;
     }
-    console.log("socket-data")
-    console.log(data);
+    // console.log("socket-data")
+    // console.log(data);
     // return <Loading/>;
     return (<MessageList2
       latestMessages={data.messages}

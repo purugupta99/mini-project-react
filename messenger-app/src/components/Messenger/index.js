@@ -8,9 +8,9 @@ export default function Messenger(props) {
   const [receiver, setReceiver] = useState("1");
   const { user } = useAuth0();
 
-  console.log("user id:", user.sub);
+  // console.log("user id:", user.sub);
   const handleReceiverChange = id => {
-    console.log(id);
+    // console.log(id);
     setReceiver(id);
   };
 

@@ -8,7 +8,7 @@ export default function Compose(props) {
     setMessageInput('');
   };
   const sendMessage = data => {
-    console.log(data.variables);
+    // console.log(data.variables);
     axios({
       url: 'https://messenger-app.hasura.app/v1/graphql',
       method: 'post',
@@ -33,7 +33,7 @@ export default function Compose(props) {
       }
     })
     .then(response => {
-        console.log(response.data.data.insert_messages.returning);
+        // console.log(response.data.data.insert_messages.returning);
         let tempMessages = response.data.data.insert_messages.returning.map(messages => {
           return {
             id: messages.id,
