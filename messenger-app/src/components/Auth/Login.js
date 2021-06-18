@@ -12,7 +12,7 @@ const Login = () => {
     <div className="overlay">
       <div className="overlay-content">
         <div className="overlay-heading">
-          Welcome to the GraphQL tutorial app
+          Welcome to the Messenger app
         </div>
         <div className="overlay-message">Please login to continue</div>
         <div className="overlay-action">

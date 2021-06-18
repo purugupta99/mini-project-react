@@ -257,3 +257,4 @@ const MessageList = (props) => {
 }
 
 export default MessageList;
+export {GET_MY_MESSAGES};
