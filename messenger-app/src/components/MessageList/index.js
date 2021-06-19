@@ -158,7 +158,7 @@ const MessageHandler= (props) => {
       let previous = messages[i - 1];
       let current = messages[i];
       let next = messages[i + 1];
-      let isMine = current.author === "2";
+      let isMine = current.author === props.sender;
       let currentMoment = moment(current.timestamp);
       let prevBySameAuthor = false;
       let nextBySameAuthor = false;

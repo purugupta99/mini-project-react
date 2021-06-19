@@ -1,11 +1,16 @@
 import React, { useState } from 'react';
 import ConversationList from '../ConversationList';
 import MessageList from '../MessageList';
+import { useAuth0 } from "../Auth/react-auth0-spa";
+
 import './Messenger.css';
 
 export default function Messenger(props) {
 
     const [recipient, setRecipient] = useState("1");
+    const { user } = useAuth0();
+
+    console.log(user);
 
     const handleRecipient = recipientId => {
       // console.log(recipientId);
@@ -36,13 +41,16 @@ export default function Messenger(props) {
         <div className="scrollable sidebar">
           <ConversationList 
           handleRecipient = {handleRecipient}
+          sender = {user.sub}
+          logout = {props.logout}
+
           />
         </div>
 
         <div className="scrollable content">
           <MessageList 
           recipient = {recipient}
-          sender = "2"
+          sender = {user.sub}
           />
         </div>
       </div>

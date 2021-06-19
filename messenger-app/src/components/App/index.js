@@ -37,7 +37,7 @@ export default function App({idToken}) {
       <ApolloProvider client={client}>
       <div className="App">
         {/* <Messenger/> */}
-        <Messenger logOutBTN = {logout} />
+        <Messenger logout = {logout} />
       </div>
       </ApolloProvider>
     );
