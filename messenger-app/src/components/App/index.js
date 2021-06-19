@@ -26,18 +26,18 @@ const createApolloClient = (idToken) => {
  };
 
 export default function App({idToken}) {
-  // const { loading, logout } = useAuth0();
-  // // console.log(logout);
-  // if (loading) {
-  //   return <Loading />;
-  // }
+  const { loading, logout } = useAuth0();
+  // console.log(logout);
+  if (loading) {
+    return <Loading />;
+  }
   const client = createApolloClient(idToken);
   // console.log(client);
     return (
       <ApolloProvider client={client}>
       <div className="App">
-        <Messenger/>
-        {/* <Messenger logOutBTN = {logout} /> */}
+        {/* <Messenger/> */}
+        <Messenger logOutBTN = {logout} />
       </div>
       </ApolloProvider>
     );

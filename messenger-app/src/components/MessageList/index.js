@@ -214,7 +214,6 @@ const MessageHandler= (props) => {
       // subscribeMessages();
       // setMessages([]);
       // getMessages(props.recipient);
-      // console.log(props.receiver, reload,talking_toID);
     }
 
     return(
