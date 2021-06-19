@@ -42,6 +42,7 @@ export default function Messenger(props) {
         <div className="scrollable content">
           <MessageList 
           recipient = {recipient}
+          sender = "2"
           />
         </div>
       </div>

@@ -64,6 +64,7 @@ const MessageHandler= (props) => {
   // console.log(props)
   const [messages, setMessages] = useState([]);
   const [recipientId, setRecipientId] = useState(props.recipient);
+  const [senderId, setSenderId] = useState(props.sender);
   const [recipientName, setRecipientName] = useState("");
 
 
@@ -75,10 +76,10 @@ const MessageHandler= (props) => {
 
     getRecipientName(recipientId);
     subscribeMessages();
-    console.log(recipientName);
+    // console.log(recipientName);
 
     
-  }, [])
+  },[])
 
   
   const getRecipientName = (recipientId) => {
@@ -139,8 +140,14 @@ const MessageHandler= (props) => {
     }
   }
 
-  subscribeMessages();
+  // subscribeMessages();
   
+  const updateConversation = msg => {
+
+    console.log(msg)
+    setMessages([...messages, ...msg]);
+    subscribeMessages();
+  }
 
   const renderMessages = () => {
     let i = 0;
@@ -204,6 +211,7 @@ const MessageHandler= (props) => {
     if(recipientId !== props.recipient){
       setRecipientId(props.recipient);
       getRecipientName(props.recipient);
+      // subscribeMessages();
       // setMessages([]);
       // getMessages(props.recipient);
       // console.log(props.receiver, reload,talking_toID);
@@ -212,7 +220,7 @@ const MessageHandler= (props) => {
     return(
       <div className="message-list">
         <Toolbar
-          title="Conversation Title"
+          title={recipientName}
           rightItems={[
             <ToolbarButton key="info" icon="ion-ios-information-circle-outline" />,
             <ToolbarButton key="video" icon="ion-ios-videocam" />,
@@ -231,14 +239,20 @@ const MessageHandler= (props) => {
           <ToolbarButton key="money" icon="ion-ios-card" />,
           <ToolbarButton key="games" icon="ion-logo-game-controller-b" />,
           <ToolbarButton key="emoji" icon="ion-ios-happy" />
-        ]}/>
+
+        ]}
+        recipientId = {props.recipient}
+        recipientName = {recipientName}
+        senderId = {props.sender}
+        updateConversation = {updateConversation}
+        />
       </div>
     );
 }
 
 const MessageList = (props) => {
   const {data, loading, error} = useSubscription(GET_CURR_MESSAGES, {variables:{
-    id_sender: "2",
+    id_sender: props.sender,
     id_receiver: props.recipient
   }});
 
@@ -250,9 +264,11 @@ const MessageList = (props) => {
     return (<div> <h1> Error </h1> <p> {error.message} </p> </div>)
   }
 
+  // console.log(data)
   return (<MessageHandler
     newMessages = {data.messages}
     recipient = {props.recipient}
+    sender = {props.sender}
   />)
 }
 

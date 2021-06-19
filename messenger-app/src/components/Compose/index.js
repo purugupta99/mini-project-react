@@ -20,44 +20,44 @@ const MessageInput = (props) => {
   let input;
   const [messageInput, setMessageInput] = useState('');
 
-  const updateCache = (cache, {data}) => {
-
-    const existingMessages = cache.readQuery({
-
-      query: GET_MY_MESSAGES
-
-    });
-
-    const newMessage = data.insert_message.returning[0];
-    cache.writeQuery({
-      query: GET_MY_MESSAGES,
-      data: {messages: [existingMessages.messages, ...newMessage]}
-    });
-  };
 
   const resetinput = () => {
     setMessageInput('');
   };
 
   const [addMessages] = useMutation(ADD_MESSAGE, {
-    update: updateCache,
     onCompleted: resetinput
   });
 
+  // console.log(messageInput)
   return (
     <form className="compose"
-    onSubmit={(e) => {
-    e.preventDefault();
-    addMessages (
-      {
-        variables: {
-          text: messageInput,
-          id_sender: "1",
-          id_receiver: "3"
+      onSubmit={(e) => {
+      e.preventDefault();
+
+      // console.log(props)
+      // console.log(messageInput, props.senderId, props.receiverId)
+      addMessages (
+        {
+          variables: {
+            text: messageInput,
+            id_sender: props.senderId,
+            id_receiver: props.recipientId
+          }
         }
-      }
-    );
-  }}
+      ).then(response => {
+        console.log(response);
+        let tempMessages = response.data.insert_messages.returning.map(messages => {
+          return {
+            id: messages.id,
+            author: messages.id_sender,
+            message: messages.text,
+            timestamp: messages.send_at
+          };
+        });
+        props.updateConversation(tempMessages);
+      });
+    }}
     >
       <input
         type="text"
