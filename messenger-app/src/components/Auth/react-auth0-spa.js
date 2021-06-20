@@ -43,6 +43,9 @@ export const Auth0Provider = ({
       }
 
       setLoading(false);
+      if(isAuthenticated && (window.location.search.includes("code="))){
+        document.location.href="/";
+      }
     };
     initAuth0();
     // eslint-disable-next-line
