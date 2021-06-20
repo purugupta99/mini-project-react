@@ -17,7 +17,7 @@ console.log(window.React1 === window.React2);
 
 // const GET_MY_MESSAGES = gql `
 
-//   query MyQuery ($id_receiver: String!, $id_sender: String!){
+//   subscription Mysubscription ($id_receiver: String!, $id_sender: String!){
 //     messages(where: {_or: [{id_receiver: {_eq: $id_receiver}}, {id_sender: {_eq: $id_sender}}]}, order_by: {send_at: asc}) {
 //       text
 //     }
@@ -25,7 +25,7 @@ console.log(window.React1 === window.React2);
 //  `;
 
  const GET_MY_MESSAGES = gql `
-  query MyQuery{
+  subscription MyQuery{
     messages(where: {_or: [{id_receiver: {_eq: "1"}}, {id_sender: {_eq: "1"}}]}, order_by: {send_at: asc}) {
       id
       text
@@ -38,7 +38,7 @@ console.log(window.React1 === window.React2);
  `;
 
  const GET_RECIPIENT_NAME = gql `
-  query MyQuery($id: String!) {
+  subscription MyQuery($id: String!) {
     users(where: {id: {_eq: $id}}) {
       name
     }
@@ -46,7 +46,7 @@ console.log(window.React1 === window.React2);
  `;
 
  const GET_CURR_MESSAGES = gql `
- query MyQuery($id_receiver: String!, $id_sender: String!) {
+ subscription MyQuery($id_receiver: String!, $id_sender: String!) {
   messages(where: {_or: [{_and: [{id_receiver: {_eq: $id_receiver}}, {id_sender: {_eq: $id_sender}}]}, {_and: [{id_receiver: {_eq: $id_sender}}, {id_sender: {_eq: $id_receiver}}]}]}) {
     id
     text
@@ -61,13 +61,27 @@ console.log(window.React1 === window.React2);
 
 const MessageHandler= (props) => {
 
-  // console.log(props)
+
   const [messages, setMessages] = useState([]);
   const [recipientId, setRecipientId] = useState(props.recipient);
   const [senderId, setSenderId] = useState(props.sender);
   const [recipientName, setRecipientName] = useState("");
 
+  if(messages.length != props.newMessages.length){
+    console.log("New message, ta da, just wait a sec, updating!!!");
+    let tempMessages = props.newMessages.map(messages => {
+      return {
+        id: messages.id,
+        author: messages.user_sender.id,
+        message: messages.text,
+        timestamp: messages.send_at
+      };
+    });
 
+    if (messages.length !== props.newMessages.length){
+      setMessages(tempMessages)
+    }
+  }
   useEffect(() => {
 
     // console.log(props.recipient)
