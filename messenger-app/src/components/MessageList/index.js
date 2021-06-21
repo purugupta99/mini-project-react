@@ -68,7 +68,7 @@ const MessageHandler= (props) => {
   const [recipientName, setRecipientName] = useState("");
 
   if(messages.length != props.newMessages.length){
-    console.log("New message, ta da, just wait a sec, updating!!!");
+    // console.log("New message, ta da, just wait a sec, updating!!!");
     let tempMessages = props.newMessages.map(messages => {
       return {
         id: messages.id,
@@ -269,7 +269,7 @@ const MessageList = (props) => {
     id_receiver: props.recipient
   }});
 
-  console.log(data)
+  // console.log(data)
   if (loading) {
     return (<div> <h1> Loading .. </h1></div>)
   }

@@ -1,45 +1,42 @@
 import React, {useState, useEffect} from 'react';
 import ConversationSearch from '../ConversationSearch';
-import ConversationListItem from '../ConversationListItem';
+import ConversationListItemWrapper from '../ConversationListItemWrapper';
+
 import Toolbar from '../Toolbar';
 import ToolbarButton from '../ToolbarButton';
-import { gql, useQuery } from '@apollo/client';
+
 
 
 import './ConversationList.css';
 
-const GET_MY_CONVOS = gql `
-  query getUsers {
-    users {
-      id
-      name
-      last_seen
+function arrayCompare(_arr1, _arr2) {
+  if (
+    !Array.isArray(_arr1)
+    || !Array.isArray(_arr2)
+    || _arr1.length !== _arr2.length
+    ) {
+      return false;
     }
+  
+  // .concat() to not mutate arguments
+  const arr1 = _arr1.concat().sort();
+  const arr2 = _arr2.concat().sort();
+  
+  for (let i = 0; i < arr1.length; i++) {
+      if (arr1[i] !== arr2[i]) {
+          return false;
+       }
   }
-`;
+  
+  return true;
+}
 
 export default function ConversationList(props) {
   const [conversations, setConversations] = useState([]);
 
-  const {data, loading, error} = useQuery(GET_MY_CONVOS);
-
-  // console.log(data);
-
-  if (loading) {
-    return (<div> <h1> Loading .. </h1></div>)
-  }
-  if (error) {
-    return (<div> <h1> Error </h1> <p> {error.message} </p> </div>)
-  }
-
-  let tempUsers = data.users.map(users => {
-    return {
-      user_id: users.id,
-      name: users.name,
-      photo: "https://i.pinimg.com/236x/38/aa/95/38aa95f88d5f0fc3fc0f691abfaeaf0c.jpg",
-      last_seen: users.last_seen,
-    };
-  });
+  // let tempUsers = props.users;
+  let tempUsers = props.users;
+  // console.log(tempUsers);
 
   if (conversations == ""){
     setConversations(tempUsers)
@@ -61,7 +58,11 @@ export default function ConversationList(props) {
 //         setConversations([...conversations, ...newConversations])
 //     });
 //   }
-
+  const updateTempUsers = (newUserList) => {
+    if(newUserList.length!== conversations.length){
+      setConversations(newUserList);
+    }
+  }
     return (
       <div className="conversation-list">
         <Toolbar
@@ -73,18 +74,14 @@ export default function ConversationList(props) {
             <ToolbarButton key="logout" icon="ion-ios-power" url={props.logout} />
           ]}
         />
-        <ConversationSearch />
-        {
-          conversations.map(conversation =>
-            <ConversationListItem
-
-              user_id = {conversation.id}
-              key = {conversation.name}
-              data = {conversation}
-              handleRecipient = {props.handleRecipient}
-            />
-          )
-        }
+        <ConversationSearch
+          userList = {tempUsers}
+          updateUserList = {updateTempUsers}
+        />
+        <ConversationListItemWrapper
+          conversations = {conversations}
+          handleRecipient = {props.handleRecipient}
+        />
       </div>
     );
 }
