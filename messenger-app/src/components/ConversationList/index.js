@@ -60,7 +60,12 @@ export default function ConversationList(props) {
 //   }
   const updateTempUsers = (newUserList) => {
     if(newUserList.length!== conversations.length){
-      setConversations(newUserList);
+      if (newUserList.length===0) {
+        // Return the message?!
+      }
+      else {
+        setConversations(newUserList);
+      }
     }
   }
     return (
