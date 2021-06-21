@@ -38,15 +38,19 @@ export default function ConversationList(props) {
   let tempUsers = props.users;
   // console.log(tempUsers);
 
-  /* if (conversations == ""){
-    setConversations(tempUsers)
-  } */
+  // if (conversations == ""){
+  //   setConversations(tempUsers)
+  // }
+
+//   useEffect(() => {
+//     getConversations()
+//   },[])
 
   const updateTempUsers = (newUserList) => {
     // console.log(newUserList);
     // console.log(conversations);
     if(newUserList.length!== conversations.length){
-      setConversations(newUserList);
+        setConversations(newUserList);
     }
   }
     return (
