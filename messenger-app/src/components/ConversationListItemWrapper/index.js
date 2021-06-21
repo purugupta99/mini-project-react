@@ -4,8 +4,12 @@ import ConversationListItem from '../ConversationListItem';
 export default function ConversationListItemWrapper(props) {
     let listItems = props.conversations;
     let toReturn;
+    // console.log(listItems);
     if(listItems.length===0){
-      toReturn = "No results found"
+      // console.log("Hello")
+      toReturn = `
+      Cannot show anyone with that unique name :)
+      `;
     }
     else{
       toReturn = listItems.map(conversation =>

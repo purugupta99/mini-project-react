@@ -38,27 +38,13 @@ export default function ConversationList(props) {
   let tempUsers = props.users;
   // console.log(tempUsers);
 
-  if (conversations == ""){
+  /* if (conversations == ""){
     setConversations(tempUsers)
-  }
+  } */
 
-//   useEffect(() => {
-//     getConversations()
-//   },[])
-
-//  const getConversations = () => {
-//     axios.get('https://randomuser.me/api/?results=20').then(response => {
-//         let newConversations = response.data.results.map(result => {
-//           return {
-//             photo: result.picture.large,
-//             name: `${result.name.first} ${result.name.last}`,
-//             text: 'Hello world! This is a long message that needs to be truncated.'
-//           };
-//         });
-//         setConversations([...conversations, ...newConversations])
-//     });
-//   }
   const updateTempUsers = (newUserList) => {
+    // console.log(newUserList);
+    // console.log(conversations);
     if(newUserList.length!== conversations.length){
       setConversations(newUserList);
     }

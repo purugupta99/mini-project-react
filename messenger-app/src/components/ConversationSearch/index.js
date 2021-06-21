@@ -63,10 +63,10 @@ const ConversationSearch = props => {
   const [searchInput, setSearchInput] = useState('');
   // props.userList, props.updateUserList
   let users = props.userList;
-  console.log(users);
+  // console.log(users);
   var searchedUsers = users.filter(user => user.name.toLowerCase().includes(searchInput.toLowerCase()));
-  console.log((searchedUsers));
-
+  // console.log((searchedUsers));
+  
   props.updateUserList(searchedUsers);
 
   const resetInput = () => {
